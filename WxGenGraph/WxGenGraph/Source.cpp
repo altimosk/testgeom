@@ -1,4 +1,3 @@
-
 #include <wx/wx.h>
 #include <utility>
 #include <vector>
@@ -21,12 +20,13 @@ private:
 
 	std::vector<ggShape*> shapes;
 	class wxGenGraph* gg;
+	wxClientDC* dc;
 };
 
 Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(280, 180))
 {
 	extern class wxGenGraph* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store);
-	wxClientDC* dc = new wxClientDC(this);
+	dc = new wxClientDC(this);
 	dc->SetBackground(*wxWHITE_BRUSH);
 	gg = SetUpGenericGraphics(dc, &shapes);
 
@@ -46,6 +46,7 @@ Canvas::~Canvas()
 {
 	extern void UnsetGenericGraphics(class wxGenGraph* gg);
 	UnsetGenericGraphics(gg);
+	delete dc;
 	for (auto s : shapes)
 		s->Release();
 }

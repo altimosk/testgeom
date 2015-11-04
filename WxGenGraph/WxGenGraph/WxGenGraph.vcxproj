@@ -126,6 +126,7 @@
   <ItemGroup>
     <ClCompile Include="drawsegs.cpp" />
     <ClCompile Include="gengraph.cpp" />
+    <ClCompile Include="shapes.cpp" />
     <ClCompile Include="Source.cpp">
       <PreprocessSuppressLineNumbers Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</PreprocessSuppressLineNumbers>
       <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</PreprocessToFile>

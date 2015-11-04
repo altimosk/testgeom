@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="drawsegs.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="gengraph.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="shapes.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="gengraph.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="shapes.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{922b5877-7062-4544-8193-01d9544a8501}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{fba81e9c-b80e-4597-b863-8c53893a6507}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
