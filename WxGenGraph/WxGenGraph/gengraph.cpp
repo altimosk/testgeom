@@ -112,7 +112,11 @@ public:
 	{
 		if (dc && shapes )
 		{
+			wxAffineMatrix2D m = dc->GetTransformMatrix();
+			dc->ResetTransformMatrix();
 			dc->Clear();
+			dc->SetTransformMatrix(m);
+
 			for (auto p : *shapes)
 				p->Draw(*dc);
 		}
