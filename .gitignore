@@ -1,0 +1,11 @@
+*.obj
+*.tlog
+*.exp
+*.pdb
+*.idb
+WxGenGraph/WxGenGraph/x64/Debug/WxGenGraph.log
+WxGenGraph/WxGenGraph/Debug/WxGenGraph.log
+*.lib
+WxGenGraph/.vs/WxGenGraph/v14/.suo
+WxGenGraph/WxGenGraph.opensdf
+WxGenGraph/WxGenGraph.sdf
