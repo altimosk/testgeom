@@ -28,6 +28,10 @@ Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefault
 	extern class wxGenGraph* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store);
 	dc = new wxClientDC(this);
 	dc->SetBackground(*wxWHITE_BRUSH);
+	wxAffineMatrix2D m;
+	m.Translate(200, 400);
+	m.Scale(1, -1);
+	dc->SetTransformMatrix(m);
 	gg = SetUpGenericGraphics(dc, &shapes);
 
 	Connect(wxEVT_LEFT_UP, wxMouseEventHandler(Canvas::DrawPoint));
@@ -67,12 +71,13 @@ void Canvas::DrawAll(wxCommandEvent&)
 
 void Canvas::OnPaint(wxPaintEvent&)
 {
-	wxPaintDC dc(this);
-	dc.SetBackground(*wxWHITE_BRUSH);
-	dc.Clear();
+	wxPaintDC pdc(this);
+	pdc.SetBackground(*wxWHITE_BRUSH);
+	pdc.Clear();
 	
+	pdc.SetTransformMatrix(dc->GetTransformMatrix());
 	for (auto s : shapes)
-		s->Draw(dc);
+		s->Draw(pdc);
 }
 
 class MyApp : public wxApp

@@ -116,6 +116,19 @@ public:
 				p->Draw(*dc);
 		}
 	}
+
+	virtual void Zoom(int x, int y, double k)
+	{
+		if (dc && k != 1)
+		{
+			wxAffineMatrix2D m = dc->GetTransformMatrix();
+			m.Scale(1 - k, 1 - k);
+			m.Translate(x, y);
+			m.Scale(k / (1 - k), k / (1 - k));
+			dc->SetTransformMatrix(m);
+		}
+	}
+
 	// changing the defaults for drawing calls like DrawLine (return previous value)
 	//virtual bool SetThrowAway(bool t) 
 	//{

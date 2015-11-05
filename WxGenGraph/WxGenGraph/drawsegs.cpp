@@ -11,4 +11,7 @@ void DrawAll()
 	GenericGraphics->DrawRect( 10, 300, 100, 400, kGreen, false, true);
 	GenericGraphics->DrawRect(110, 300, 210, 400, kOrange, true, false);
 
+	GenericGraphics->Zoom(200, 0, .5);
+	GenericGraphics->Redraw();
+
 }
