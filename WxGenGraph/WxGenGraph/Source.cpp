@@ -29,7 +29,6 @@ Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefault
 	dc = new wxClientDC(this);
 	dc->SetBackground(*wxWHITE_BRUSH);
 	wxAffineMatrix2D m;
-	m.Translate(200, 400);
 	m.Scale(1, -1);
 	dc->SetTransformMatrix(m);
 	gg = SetUpGenericGraphics(dc, &shapes);
