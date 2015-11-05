@@ -5,6 +5,15 @@
 #include <algorithm>
 #include <cmath>
 
+// helper for Zoom and Center: change translation to place src at dest
+void AdjustTranslate(wxAffineMatrix2D& m, wxPoint2DDouble src, wxPoint2DDouble dest)
+{
+	wxAffineMatrix2D inv(m);
+	inv.Invert();
+	wxPoint2DDouble t = inv.TransformPoint(dest) - src;
+	m.Translate(t.m_x, t.m_y);
+}
+
 class wxGenGraph : public cGenericGraphics
 {
 public:
@@ -98,15 +107,7 @@ public:
 			shapes->push_back(new ggRect(r));
 	}
 
-	/*----------------------------------------------------------------------+
-	|                                                                       |
-	|   Redraw -- redraw the entire contents of the window.  This does      |
-	|             not redraw any unsaved graphics that were previously      |
-	|             drawn.  This routine is provided for your convenience     |
-	|             while inside a debugger.  This routine will discard any   |
-	|             pending keyin and mouse events.                           |
-	|                                                                       |
-	+----------------------------------------------------------------------*/
+	// redraw non-throw-away shapes
 	void Redraw()
 	{
 		if (dc && shapes )
@@ -117,14 +118,28 @@ public:
 		}
 	}
 
+	// scale all saved and future drawings. x,y retains its position on screen
 	virtual void Zoom(int x, int y, double k)
 	{
 		if (dc && k != 1)
 		{
 			wxAffineMatrix2D m = dc->GetTransformMatrix();
-			m.Scale(1 - k, 1 - k);
-			m.Translate(x, y);
-			m.Scale(k / (1 - k), k / (1 - k));
+			wxPoint2DDouble src(x, y);
+			wxPoint2DDouble dest = m.TransformPoint(src);
+			m.Scale(k, k);
+			AdjustTranslate(m, src, dest);
+			dc->SetTransformMatrix(m);
+		}
+	}
+
+	// make x,y appear in the center of the screen; scaling unchanged
+	virtual void Center(int x, int y)
+	{
+		if (dc)
+		{
+			wxAffineMatrix2D m = dc->GetTransformMatrix();
+			wxSize sz = dc->GetSize();
+			AdjustTranslate(m, wxPoint2DDouble(x, y), wxPoint2DDouble(sz.GetWidth()/2, sz.GetHeight()/2));
 			dc->SetTransformMatrix(m);
 		}
 	}

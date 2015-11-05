@@ -78,8 +78,13 @@ public:
     void FlushToScreen()
     {}
 
-    virtual void Zoom(int x, int y, double koff)
-    {}
+	// scale all saved and future drawings. x,y retains its position on screen
+	virtual void Zoom(int x, int y, double koff) 
+	{}
+
+	// make x,y appear in the center of the screen; scaling unchanged
+	virtual void Center(int x, int y)
+	{}
 
     virtual void StartPolygon()
     {}
