@@ -1,5 +1,10 @@
 #include "gengraph.h"
-extern cGenericGraphics* GenericGraphics;
+static cGenericGraphics* GenericGraphics = 0;
+extern "C"
+__declspec(dllexport) void SetGenericGraphics(cGenericGraphics *gg) {
+	GenericGraphics = gg;
+}
+
 
 void DrawAll()
 {

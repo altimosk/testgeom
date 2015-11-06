@@ -102,6 +102,8 @@ public:
 	virtual bool SetFill(bool fill) {
 		return false;
 	}
+	virtual ~cGenericGraphics()
+	{}
 };
 
 enum ggColors

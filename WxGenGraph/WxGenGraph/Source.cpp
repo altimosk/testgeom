@@ -4,7 +4,6 @@
 #include <algorithm>
 #include "shapes.h"
 #include "gengraph.h"
-extern cGenericGraphics* GenericGraphics;
 extern void DrawAll();
 
 class Canvas : public wxFrame
@@ -19,13 +18,13 @@ private:
 	void DrawAll(wxCommandEvent&);
 
 	std::vector<ggShape*> shapes;
-	class wxGenGraph* gg;
+	cGenericGraphics* gg;
 	wxClientDC* dc;
 };
 
 Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(280, 180))
 {
-	extern class wxGenGraph* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store);
+	extern cGenericGraphics* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store);
 	dc = new wxClientDC(this);
 	dc->SetBackground(*wxWHITE_BRUSH);
 	wxAffineMatrix2D m;
@@ -47,7 +46,7 @@ Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefault
 }
 Canvas::~Canvas()
 {
-	extern void UnsetGenericGraphics(class wxGenGraph* gg);
+	extern void UnsetGenericGraphics(cGenericGraphics* gg);
 	UnsetGenericGraphics(gg);
 	delete dc;
 	for (auto s : shapes)
@@ -56,11 +55,17 @@ Canvas::~Canvas()
 
 void Canvas::DrawPoint(wxMouseEvent & ev)
 {
-	GenericGraphics->DrawCircle(ev.m_x, ev.m_y, 1, kBlue, true, true);
+	wxAffineMatrix2D m = dc->GetTransformMatrix();
+	m.Invert();
+	wxPoint2DDouble p = m.TransformPoint(wxPoint2DDouble(ev.m_x, ev.m_y));
+	gg->DrawCircle(p.m_x, p.m_y, 1, kBlue, true, true);
 }
 void Canvas::StorePoint(wxMouseEvent & ev)
 {
-	GenericGraphics->DrawCircle(ev.m_x, ev.m_y, 1, kRed, true, false);
+	wxAffineMatrix2D m = dc->GetTransformMatrix();
+	m.Invert();
+	wxPoint2DDouble p = m.TransformPoint(wxPoint2DDouble(ev.m_x, ev.m_y));
+	gg->DrawCircle(p.m_x, p.m_y, 1, kRed, true, false);
 }
 
 void Canvas::DrawAll(wxCommandEvent&)

@@ -176,20 +176,15 @@ private:
 //int wxGenGraph::width = 0;
 //bool wxGenGraph::fill = false;
 
-class wxGenGraph* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store)
+cGenericGraphics* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store)
 {
 	wxGenGraph* gg = new wxGenGraph(draw, store);
 	SetGenericGraphics(gg);
 	return gg;
 }
 
-void UnsetGenericGraphics(class wxGenGraph* gg = 0)
+void UnsetGenericGraphics(cGenericGraphics* gg = 0)
 {
 	SetGenericGraphics(0);
 	delete gg;
 }
-cGenericGraphics* GenericGraphics = 0;
-extern "C"
-__declspec(dllexport) void SetGenericGraphics(cGenericGraphics *gg) {
-	GenericGraphics = gg; }
-

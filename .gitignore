@@ -11,3 +11,8 @@ WxGenGraph/WxGenGraph.opensdf
 WxGenGraph/WxGenGraph.sdf
 WxGenGraph/Debug/WxGenGraph.exe
 WxGenGraph/Debug/WxGenGraph.ilk
+*.exe
+*.iobj
+*.ipdb
+WxGenGraph/WxGenGraph/Debug/WxGenGraph.Build.CppClean.log
+WxGenGraph/WxGenGraph/Release/WxGenGraph.log
