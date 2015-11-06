@@ -6,7 +6,8 @@ __declspec(dllexport) void SetGenericGraphics(cGenericGraphics *gg) {
 }
 
 
-void DrawAll()
+extern "C"
+__declspec(dllexport) void DrawAll()
 {
 	if (!GenericGraphics)
 		return;
@@ -21,8 +22,4 @@ void DrawAll()
 	GenericGraphics->DrawRect(110, 300, 210, 400, kOrange, true, false);
 	
 	GenericGraphics->DrawCircle(100, 0, 40, kOrange, false, false);
-
-	GenericGraphics->Zoom(100, 0, .5);
-	GenericGraphics->Redraw();
-
 }

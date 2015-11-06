@@ -16,3 +16,9 @@ WxGenGraph/Debug/WxGenGraph.ilk
 *.ipdb
 WxGenGraph/WxGenGraph/Debug/WxGenGraph.Build.CppClean.log
 WxGenGraph/WxGenGraph/Release/WxGenGraph.log
+*.suo
+*.sdf
+ClientDLL/ClientDLL.vcxproj.user
+*.dll
+*.ilk
+ClientDLL/Debug/ClientDLL.log

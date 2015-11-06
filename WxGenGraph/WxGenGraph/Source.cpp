@@ -4,7 +4,10 @@
 #include <algorithm>
 #include "shapes.h"
 #include "gengraph.h"
-extern void DrawAll();
+#include "cliwrap.h"
+
+extern GenericGraphics* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store);
+extern void UnsetGenericGraphics(GenericGraphics* gg);
 
 class Canvas : public wxFrame
 {
@@ -20,8 +23,9 @@ private:
 	void DeInitClient();
 
 	std::vector<ggShape*> shapes;
-	cGenericGraphics* gg;
+	GenericGraphics* gg;
 	wxClientDC* dc;
+	ClientWrap cw;
 };
 
 Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(280, 180)), gg(0), dc(0)
@@ -50,27 +54,32 @@ Canvas::~Canvas()
 void Canvas::InitClient(wxCommandEvent&)
 {
 	DeInitClient();
-	extern cGenericGraphics* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store);
 	dc = new wxClientDC(this);
 	dc->SetBackground(*wxWHITE_BRUSH);
 	wxAffineMatrix2D m;
 	m.Scale(1, -1);
 	dc->SetTransformMatrix(m);
 	gg = SetUpGenericGraphics(dc, &shapes);
+	if (!gg)
+	{
+		delete dc;
+		dc = 0;
+	}
+	else
+	{
+		cw.ReInit(gg);
+	}
+
 	Refresh();
 }
 
 void  Canvas::DeInitClient()
 {
-	if (!gg)
-		return;
-
-	extern void UnsetGenericGraphics(cGenericGraphics* gg);
 	UnsetGenericGraphics(gg);
 	delete dc;
 	gg = 0;
 	dc = 0;
-
+	cw.Unwrap();
 }
 
 void Canvas::DrawPoint(wxMouseEvent & ev)
@@ -95,7 +104,7 @@ void Canvas::StorePoint(wxMouseEvent & ev)
 
 void Canvas::DrawAll(wxCommandEvent&)
 {
-	::DrawAll();
+	cw.DrawAll();
 }
 
 void Canvas::OnPaint(wxPaintEvent&)

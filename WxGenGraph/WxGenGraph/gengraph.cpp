@@ -14,7 +14,7 @@ void AdjustTranslate(wxAffineMatrix2D& m, wxPoint2DDouble src, wxPoint2DDouble d
 	m.Translate(t.m_x, t.m_y);
 }
 
-class wxGenGraph : public cGenericGraphics
+class wxGenGraph : public GenericGraphics
 {
 public:
 	wxGenGraph(wxDC *draw, std::vector<ggShape*>* store) : shapes(store), dc(draw) {
@@ -176,15 +176,13 @@ private:
 //int wxGenGraph::width = 0;
 //bool wxGenGraph::fill = false;
 
-cGenericGraphics* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store)
+
+GenericGraphics* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store)
 {
-	wxGenGraph* gg = new wxGenGraph(draw, store);
-	SetGenericGraphics(gg);
-	return gg;
+	return new wxGenGraph(draw, store);
 }
 
-void UnsetGenericGraphics(cGenericGraphics* gg = 0)
+void UnsetGenericGraphics(GenericGraphics* gg = 0)
 {
-	SetGenericGraphics(0);
 	delete gg;
 }
