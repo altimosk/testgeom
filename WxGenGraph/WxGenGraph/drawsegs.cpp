@@ -8,6 +8,9 @@ __declspec(dllexport) void SetGenericGraphics(cGenericGraphics *gg) {
 
 void DrawAll()
 {
+	if (!GenericGraphics)
+		return;
+
 	GenericGraphics->Center(0, 0);
 	GenericGraphics->DrawLine(10, 10, 200, 50, kBlue, 10, false, true);
 	GenericGraphics->DrawLine(10, 50, 200, 20, kRed, 20, false, false);
