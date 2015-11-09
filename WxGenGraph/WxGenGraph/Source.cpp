@@ -6,6 +6,13 @@
 #include "gengraph.h"
 #include "cliwrap.h"
 
+// Boost.Test
+#ifndef BOOST_TEST_DYN_LINK
+#define BOOST_TEST_DYN_LINK
+#endif
+#include <boost/test/unit_test.hpp>
+
+
 extern GenericGraphics* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store);
 extern void UnsetGenericGraphics(GenericGraphics* gg);
 
@@ -20,6 +27,7 @@ private:
 	void OnPaint(wxPaintEvent&);
 	void DrawAll(wxCommandEvent&);
 	void InitClient(wxCommandEvent&);
+	void RunUnitTests(wxCommandEvent&);
 	void DeInitClient();
 
 	std::vector<ggShape*> shapes;
@@ -38,11 +46,13 @@ Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefault
 	wxMenu* file = new wxMenu;
 	file->Append(1, wxT("&Init Client"));
 	file->Append(2, wxT("&Draw All"));
+	file->Append(3, wxT("&Run Tests"));
 	menubar->Append(file, wxT("&Draw"));
 	SetMenuBar(menubar);
 
 	Connect(1, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Canvas::InitClient));
 	Connect(2, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Canvas::DrawAll));
+	Connect(3, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Canvas::RunUnitTests));
 }
 Canvas::~Canvas()
 {
@@ -107,6 +117,17 @@ void Canvas::DrawAll(wxCommandEvent&)
 	cw.DrawAll();
 }
 
+bool dummy() 
+{
+	return true;
+}
+void Canvas::RunUnitTests(wxCommandEvent&)
+{
+	char* name = "qq";
+
+	::boost::unit_test::unit_test_main(&dummy, 1, &name);
+//	::boost::unit_test::framework::clear();
+}
 void Canvas::OnPaint(wxPaintEvent&)
 {
 	if (!gg)
@@ -134,3 +155,4 @@ bool MyApp::OnInit()
 	(new Canvas(wxT("Canvas")))->Show(true);
 	return true;
 }
+
