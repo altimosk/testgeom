@@ -22,3 +22,5 @@ ClientDLL/ClientDLL.vcxproj.user
 *.dll
 *.ilk
 ClientDLL/Debug/ClientDLL.log
+*.opensdf
+BoostTest/x64/Debug/BoostTest.log
