@@ -1,7 +1,7 @@
 #ifndef GENGRAPH_H
 #define GENGRAPH_H
 
-class GenericGraphics
+class cGenericGraphics
 {
 public:
     // an interface to a simplistic graphics system, mimicking cGrDebug
@@ -102,7 +102,7 @@ public:
 	virtual bool SetFill(bool fill) {
 		return false;
 	}
-	virtual ~GenericGraphics()
+	virtual ~cGenericGraphics()
 	{}
 };
 
@@ -129,6 +129,6 @@ enum ggColors
 
 
 extern "C"
-__declspec(dllexport) void SetGenericGraphics(GenericGraphics *);
+__declspec(dllexport) void SetGenericGraphics(cGenericGraphics *);
 
 #endif

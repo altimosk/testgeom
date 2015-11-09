@@ -4,7 +4,17 @@
 #include <algorithm>
 #include "shapes.h"
 #include "gengraph.h"
-extern void DrawAll();
+#include "cliwrap.h"
+
+// Boost.Test
+#ifndef BOOST_TEST_DYN_LINK
+#define BOOST_TEST_DYN_LINK
+#endif
+#include <boost/test/unit_test.hpp>
+
+
+extern GenericGraphics* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store);
+extern void UnsetGenericGraphics(GenericGraphics* gg);
 
 class Canvas : public wxFrame
 {
@@ -17,11 +27,13 @@ private:
 	void OnPaint(wxPaintEvent&);
 	void DrawAll(wxCommandEvent&);
 	void InitClient(wxCommandEvent&);
+	void RunUnitTests(wxCommandEvent&);
 	void DeInitClient();
 
 	std::vector<ggShape*> shapes;
-	cGenericGraphics* gg;
+	GenericGraphics* gg;
 	wxClientDC* dc;
+	ClientWrap cw;
 };
 
 Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(280, 180)), gg(0), dc(0)
@@ -34,11 +46,13 @@ Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefault
 	wxMenu* file = new wxMenu;
 	file->Append(1, wxT("&Init Client"));
 	file->Append(2, wxT("&Draw All"));
+	file->Append(3, wxT("&Run Tests"));
 	menubar->Append(file, wxT("&Draw"));
 	SetMenuBar(menubar);
 
 	Connect(1, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Canvas::InitClient));
 	Connect(2, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Canvas::DrawAll));
+	Connect(3, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Canvas::RunUnitTests));
 }
 Canvas::~Canvas()
 {
@@ -50,27 +64,32 @@ Canvas::~Canvas()
 void Canvas::InitClient(wxCommandEvent&)
 {
 	DeInitClient();
-	extern cGenericGraphics* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store);
 	dc = new wxClientDC(this);
 	dc->SetBackground(*wxWHITE_BRUSH);
 	wxAffineMatrix2D m;
 	m.Scale(1, -1);
 	dc->SetTransformMatrix(m);
 	gg = SetUpGenericGraphics(dc, &shapes);
+	if (!gg)
+	{
+		delete dc;
+		dc = 0;
+	}
+	else
+	{
+		cw.ReInit(gg);
+	}
+
 	Refresh();
 }
 
 void  Canvas::DeInitClient()
 {
-	if (!gg)
-		return;
-
-	extern void UnsetGenericGraphics(cGenericGraphics* gg);
 	UnsetGenericGraphics(gg);
 	delete dc;
 	gg = 0;
 	dc = 0;
-
+	cw.Unwrap();
 }
 
 void Canvas::DrawPoint(wxMouseEvent & ev)
@@ -95,9 +114,20 @@ void Canvas::StorePoint(wxMouseEvent & ev)
 
 void Canvas::DrawAll(wxCommandEvent&)
 {
-	::DrawAll();
+	cw.DrawAll();
 }
 
+bool dummy() 
+{
+	return true;
+}
+void Canvas::RunUnitTests(wxCommandEvent&)
+{
+	char* name = "qq";
+
+	::boost::unit_test::unit_test_main(&dummy, 1, &name);
+//	::boost::unit_test::framework::clear();
+}
 void Canvas::OnPaint(wxPaintEvent&)
 {
 	if (!gg)
@@ -125,3 +155,4 @@ bool MyApp::OnInit()
 	(new Canvas(wxT("Canvas")))->Show(true);
 	return true;
 }
+
