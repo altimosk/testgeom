@@ -2,15 +2,13 @@
 #include <utility>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 #include "shapes.h"
 #include "gengraph.h"
 #include "cliwrap.h"
-
-// Boost.Test
-#ifndef BOOST_TEST_DYN_LINK
-#define BOOST_TEST_DYN_LINK
-#endif
-#include <boost/test/unit_test.hpp>
+#include "gentree.h"
+#include "treedlg.h"
+#include "unittree.h"
 
 
 extern GenericGraphics* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store);
@@ -25,18 +23,19 @@ private:
 	void DrawPoint(wxMouseEvent &);
 	void StorePoint(wxMouseEvent &);
 	void OnPaint(wxPaintEvent&);
-	void DrawAll(wxCommandEvent&);
 	void InitClient(wxCommandEvent&);
 	void RunUnitTests(wxCommandEvent&);
 	void DeInitClient();
+	void SelectTest(wxCommandEvent&);
 
 	std::vector<ggShape*> shapes;
 	GenericGraphics* gg;
 	wxClientDC* dc;
 	ClientWrap cw;
+	unsigned long testId;
 };
 
-Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(280, 180)), gg(0), dc(0)
+Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(280, 180)), gg(0), dc(0), testId(0xffffffff)
 {
 	Connect(wxEVT_LEFT_UP, wxMouseEventHandler(Canvas::DrawPoint));
 	Connect(wxEVT_RIGHT_UP, wxMouseEventHandler(Canvas::StorePoint));
@@ -45,14 +44,16 @@ Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefault
 	wxMenuBar* menubar = new wxMenuBar;
 	wxMenu* file = new wxMenu;
 	file->Append(1, wxT("&Init Client"));
-	file->Append(2, wxT("&Draw All"));
-	file->Append(3, wxT("&Run Tests"));
-	menubar->Append(file, wxT("&Draw"));
+	file->Append(2, wxT("&Select Test"));
+	file->Append(3, wxT("&Run Test(s)"));
+	menubar->Append(file, wxT("&Tests"));
 	SetMenuBar(menubar);
 
 	Connect(1, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Canvas::InitClient));
-	Connect(2, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Canvas::DrawAll));
+	Connect(2, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Canvas::SelectTest));
 	Connect(3, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Canvas::RunUnitTests));
+
+	CreateStatusBar();
 }
 Canvas::~Canvas()
 {
@@ -112,22 +113,11 @@ void Canvas::StorePoint(wxMouseEvent & ev)
 	gg->DrawCircle(p.m_x, p.m_y, 1, kRed, true, false);
 }
 
-void Canvas::DrawAll(wxCommandEvent&)
-{
-	cw.DrawAll();
-}
-
-bool dummy() 
-{
-	return true;
-}
 void Canvas::RunUnitTests(wxCommandEvent&)
 {
-	char* name = "qq";
-
-	::boost::unit_test::unit_test_main(&dummy, 1, &name);
-//	::boost::unit_test::framework::clear();
+	::RunUnitTests(testId);
 }
+
 void Canvas::OnPaint(wxPaintEvent&)
 {
 	if (!gg)
@@ -140,6 +130,21 @@ void Canvas::OnPaint(wxPaintEvent&)
 	pdc.SetTransformMatrix(dc->GetTransformMatrix());
 	for (auto s : shapes)
 		s->Draw(pdc);
+}
+
+void Canvas::SelectTest(wxCommandEvent&)
+{
+	UnitTreeNode* root = MakeCurrentUnitTree();
+//		TreeNode* root = MakeTree(std::ifstream("profi.hie"));
+	UnitTreeNode* sel = static_cast<UnitTreeNode*>(SelectNode(root));
+	if (sel)
+	{
+		testId = sel->id;
+		std::string path;
+		sel->Path(path);
+		SetStatusText(path);
+	}
+	delete root;
 }
 
 class MyApp : public wxApp

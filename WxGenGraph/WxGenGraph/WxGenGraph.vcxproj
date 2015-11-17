@@ -28,7 +28,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -131,17 +131,25 @@
   <ItemGroup>
     <ClCompile Include="cliwrap.cpp" />
     <ClCompile Include="gengraph.cpp" />
+    <ClCompile Include="gentree.cpp" />
     <ClCompile Include="shapes.cpp" />
     <ClCompile Include="Source.cpp">
       <PreprocessSuppressLineNumbers Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</PreprocessSuppressLineNumbers>
       <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</PreprocessToFile>
       <PreprocessKeepComments Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</PreprocessKeepComments>
     </ClCompile>
+    <ClCompile Include="tokens.cpp" />
+    <ClCompile Include="treedlg.cpp" />
+    <ClCompile Include="unittree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cliwrap.h" />
     <ClInclude Include="gengraph.h" />
+    <ClInclude Include="gentree.h" />
     <ClInclude Include="shapes.h" />
+    <ClInclude Include="tokens.h" />
+    <ClInclude Include="treedlg.h" />
+    <ClInclude Include="unittree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

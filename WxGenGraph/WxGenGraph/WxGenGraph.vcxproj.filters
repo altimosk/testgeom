@@ -13,6 +13,18 @@
     <ClCompile Include="cliwrap.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="gentree.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="tokens.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="treedlg.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="unittree.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gengraph.h">
@@ -22,6 +34,18 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="cliwrap.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="gentree.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="tokens.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="treedlg.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="unittree.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

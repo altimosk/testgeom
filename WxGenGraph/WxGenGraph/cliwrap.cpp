@@ -9,7 +9,6 @@ if (dll)
 		if (ggf)
 			ggf(0);
 		ggf = 0;
-		daf = 0;
 
 		FreeLibrary(dll);
 		dll = 0;
@@ -30,9 +29,11 @@ bool ClientWrap::ReInit(GenericGraphics* gg)
 	ggf = (SetGGFunc) ::GetProcAddress(dll, "SetGenericGraphics");
 	if (!ggf)
 		return false;
-
-	daf = (DrawAllFunc) ::GetProcAddress(dll, "DrawAll"); //optional, no failure
-
 	ggf(gg);
+
+	typedef bool(*init_func_ptr)();
+	if (init_func_ptr init_func = (init_func_ptr)::GetProcAddress(dll, "init_unit_test"))
+		(*init_func)();
+
 	return true;
 }
