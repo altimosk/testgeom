@@ -1,11 +1,6 @@
 #include <wx/wx.h>
-#include <utility>
-#include <vector>
-#include <algorithm>
-#include <fstream>
 #include "gengraph.h"
 #include "cliwrap.h"
-#include "gentree.h"
 #include "treedlg.h"
 #include "unittree.h"
 
@@ -133,7 +128,6 @@ void Canvas::OnPaint(wxPaintEvent&)
 void Canvas::SelectTest(wxCommandEvent&)
 {
 	UnitTreeNode* root = MakeCurrentUnitTree();
-//		TreeNode* root = MakeTree(std::ifstream("profi.hie"));
 	UnitTreeNode* sel = static_cast<UnitTreeNode*>(SelectNode(root));
 	if (sel)
 	{
