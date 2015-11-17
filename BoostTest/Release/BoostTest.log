@@ -1,0 +1,17 @@
+﻿Build started 11.11.2015 11:56:55.
+     1>Project "D:\GitHub\testgeom\BoostTest\BoostTest.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         D:\VSexpress15\VC\bin\CL.exe /c /Iu:\ /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Release\\" /Fd"Release\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Source.cpp
+         Source.cpp
+       Link:
+         D:\VSexpress15\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\GitHub\testgeom\BoostTest\Release\BoostTest.dll" /INCREMENTAL:NO /NOLOGO /LIBPATH:U:\stage\lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"D:\GitHub\testgeom\BoostTest\Release\BoostTest.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\GitHub\testgeom\BoostTest\Release\BoostTest.lib" /MACHINE:X86 /SAFESEH /DLL Release\Source.obj
+            Creating library D:\GitHub\testgeom\BoostTest\Release\BoostTest.lib and object D:\GitHub\testgeom\BoostTest\Release\BoostTest.exp
+         Generating code
+         All 191 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+         Finished generating code
+         BoostTest.vcxproj -> D:\GitHub\testgeom\BoostTest\Release\BoostTest.dll
+     1>Done Building Project "D:\GitHub\testgeom\BoostTest\BoostTest.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:05.35
