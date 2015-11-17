@@ -17,39 +17,38 @@ void AdjustTranslate(wxAffineMatrix2D& m, wxPoint2DDouble src, wxPoint2DDouble d
 class wxGenGraph : public GenericGraphics
 {
 public:
-	wxGenGraph(wxDC *draw, std::vector<ggShape*>* store) : shapes(store), dc(draw) {
+	wxGenGraph(wxDC *draw) : dc(draw) {
+		}
+	~wxGenGraph()
+	{
+		for (auto s : shapes)
+			s->Release();
 	}
 
 	void DeleteSavedGraphics(int segment)
 	{
-		if (shapes)
+		int shift = 0;
+		for (size_t i = 0; i < shapes.size(); ++i)
 		{
-			int shift = 0;
-			for (size_t i = 0; i < shapes->size(); ++i)
+			ggShape* s = shapes[i];
+			if (s->Color() == segment)
 			{
-				ggShape* s = (*shapes)[i];
-				if (s->Color() == segment)
-				{
-					s->Release();
-					++shift;
-				}
-				else if (shift)
-				{
-					(*shapes)[i - shift] = s;
-				}
+				s->Release();
+				++shift;
 			}
-			shapes->resize(shapes->size() - shift);
+			else if (shift)
+			{
+				shapes[i - shift] = s;
+			}
 		}
+		shapes.resize(shapes.size() - shift);
 	}
 
 	void DeleteSavedGraphics() 
 	{
-		if (shapes)
-		{
-			for (auto s : *shapes)
-				s->Release();
-			shapes->clear();
-		}
+		for (auto s : shapes)
+			s->Release();
+		shapes.clear();
 	}
 
 
@@ -59,8 +58,8 @@ public:
 		ggSegm s(x1, y1, x2, y2, w, segment);
 		if( dc )
 			s.Draw(*dc);
-		if (!t && shapes)
-			shapes->push_back(new ggSegm(s));
+		if (!t)
+			shapes.push_back(new ggSegm(s));
 	}
 
 	void DrawArc(int x1, int y1, int x2, int y2, int radius, // > 0 clockwise
@@ -82,8 +81,8 @@ public:
 
 		if (dc)
 			a.Draw(*dc);
-		if (!t && shapes)
-			shapes->push_back(new ggArc(a));
+		if (!t)
+			shapes.push_back(new ggArc(a));
 
 
 	}
@@ -93,8 +92,8 @@ public:
 		ggCircle c(x, y, (1+diameter)/2, f, segment);
 		if (dc)
 			c.Draw(*dc);
-		if (!t && shapes)
-			shapes->push_back(new ggCircle(c));
+		if (!t)
+			shapes.push_back(new ggCircle(c));
 	}
 
 	void DrawRect(int xmin, int ymin, int xmax, int ymax, int segment,
@@ -103,21 +102,21 @@ public:
 		ggRect r(xmin, ymin, xmax, ymax, f, segment);
 		if (dc)
 			r.Draw(*dc);
-		if (!t && shapes)
-			shapes->push_back(new ggRect(r));
+		if (!t)
+			shapes.push_back(new ggRect(r));
 	}
 
 	// redraw non-throw-away shapes
 	void Redraw()
 	{
-		if (dc && shapes )
+		if (dc)
 		{
 			wxAffineMatrix2D m = dc->GetTransformMatrix();
 			dc->ResetTransformMatrix();
 			dc->Clear();
 			dc->SetTransformMatrix(m);
 
-			for (auto p : *shapes)
+			for (auto p : shapes)
 				p->Draw(*dc);
 		}
 	}
@@ -148,6 +147,8 @@ public:
 		}
 	}
 
+	wxDC *dc;
+
 	// changing the defaults for drawing calls like DrawLine (return previous value)
 	//virtual bool SetThrowAway(bool t) 
 	//{
@@ -165,8 +166,7 @@ public:
 	//	return f;
 	//}
 private:
-	std::vector<ggShape*>* shapes;
-	wxDC *dc;
+	std::vector<ggShape*> shapes;
 	//static bool throwAway;
 	//static int width;
 	//static bool fill;
@@ -177,12 +177,19 @@ private:
 //bool wxGenGraph::fill = false;
 
 
-GenericGraphics* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store)
+GenericGraphics* SetUpGenericGraphics(wxDC *draw)
 {
-	return new wxGenGraph(draw, store);
+	return new wxGenGraph(draw);
 }
 
 void UnsetGenericGraphics(GenericGraphics* gg = 0)
 {
 	delete gg;
+}
+
+wxDC* ReplaceDC(GenericGraphics* gg, wxDC *dc)
+{
+	wxGenGraph* wgg = static_cast<wxGenGraph*>(gg);
+	std::swap(dc, wgg->dc);
+	return dc;
 }

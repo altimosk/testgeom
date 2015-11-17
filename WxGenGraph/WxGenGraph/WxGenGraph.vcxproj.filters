@@ -1,22 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="gengraph.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Source.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="shapes.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="cliwrap.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="gentree.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="tokens.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="treedlg.cpp">
@@ -27,19 +15,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gengraph.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="shapes.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="cliwrap.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="gentree.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="tokens.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="treedlg.h">

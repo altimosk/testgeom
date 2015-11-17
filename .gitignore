@@ -24,3 +24,5 @@ ClientDLL/ClientDLL.vcxproj.user
 ClientDLL/Debug/ClientDLL.log
 *.opensdf
 BoostTest/x64/Debug/BoostTest.log
+*.log
+*.ipch

@@ -3,7 +3,6 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
-#include "shapes.h"
 #include "gengraph.h"
 #include "cliwrap.h"
 #include "gentree.h"
@@ -11,8 +10,9 @@
 #include "unittree.h"
 
 
-extern GenericGraphics* SetUpGenericGraphics(wxDC *draw, std::vector<ggShape*>* store);
+extern GenericGraphics* SetUpGenericGraphics(wxDC *dc);
 extern void UnsetGenericGraphics(GenericGraphics* gg);
+extern wxDC* ReplaceDC(GenericGraphics* gg, wxDC *dc);
 
 class Canvas : public wxFrame
 {
@@ -28,7 +28,6 @@ private:
 	void DeInitClient();
 	void SelectTest(wxCommandEvent&);
 
-	std::vector<ggShape*> shapes;
 	GenericGraphics* gg;
 	wxClientDC* dc;
 	ClientWrap cw;
@@ -58,8 +57,6 @@ Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefault
 Canvas::~Canvas()
 {
 	DeInitClient();
-	for (auto s : shapes)
-		s->Release();
 }
 
 void Canvas::InitClient(wxCommandEvent&)
@@ -70,7 +67,7 @@ void Canvas::InitClient(wxCommandEvent&)
 	wxAffineMatrix2D m;
 	m.Scale(1, -1);
 	dc->SetTransformMatrix(m);
-	gg = SetUpGenericGraphics(dc, &shapes);
+	gg = SetUpGenericGraphics(dc);
 	if (!gg)
 	{
 		delete dc;
@@ -128,8 +125,9 @@ void Canvas::OnPaint(wxPaintEvent&)
 	pdc.Clear();
 	
 	pdc.SetTransformMatrix(dc->GetTransformMatrix());
-	for (auto s : shapes)
-		s->Draw(pdc);
+	wxDC* oldc = ReplaceDC(gg, &pdc);
+	gg->Redraw();
+	ReplaceDC(gg, oldc);
 }
 
 void Canvas::SelectTest(wxCommandEvent&)

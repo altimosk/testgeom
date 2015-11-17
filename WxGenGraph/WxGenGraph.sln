@@ -4,6 +4,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WxGenGraph", "WxGenGraph\WxGenGraph.vcxproj", "{A286ADD3-6EC9-4FBF-A396-771973B933A7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7A867DBC-5F04-4881-918B-6269DE5F46D7} = {7A867DBC-5F04-4881-918B-6269DE5F46D7}
+		{493E23CB-182E-4933-AC06-536231623B89} = {493E23CB-182E-4933-AC06-536231623B89}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GenGraph", "GenGraph\GenGraph.vcxproj", "{7A867DBC-5F04-4881-918B-6269DE5F46D7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GenTree", "GenTree\GenTree.vcxproj", "{493E23CB-182E-4933-AC06-536231623B89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +29,22 @@ Global
 		{A286ADD3-6EC9-4FBF-A396-771973B933A7}.Release|x64.Build.0 = Release|x64
 		{A286ADD3-6EC9-4FBF-A396-771973B933A7}.Release|x86.ActiveCfg = Release|Win32
 		{A286ADD3-6EC9-4FBF-A396-771973B933A7}.Release|x86.Build.0 = Release|Win32
+		{7A867DBC-5F04-4881-918B-6269DE5F46D7}.Debug|x64.ActiveCfg = Debug|x64
+		{7A867DBC-5F04-4881-918B-6269DE5F46D7}.Debug|x64.Build.0 = Debug|x64
+		{7A867DBC-5F04-4881-918B-6269DE5F46D7}.Debug|x86.ActiveCfg = Debug|Win32
+		{7A867DBC-5F04-4881-918B-6269DE5F46D7}.Debug|x86.Build.0 = Debug|Win32
+		{7A867DBC-5F04-4881-918B-6269DE5F46D7}.Release|x64.ActiveCfg = Release|x64
+		{7A867DBC-5F04-4881-918B-6269DE5F46D7}.Release|x64.Build.0 = Release|x64
+		{7A867DBC-5F04-4881-918B-6269DE5F46D7}.Release|x86.ActiveCfg = Release|Win32
+		{7A867DBC-5F04-4881-918B-6269DE5F46D7}.Release|x86.Build.0 = Release|Win32
+		{493E23CB-182E-4933-AC06-536231623B89}.Debug|x64.ActiveCfg = Debug|x64
+		{493E23CB-182E-4933-AC06-536231623B89}.Debug|x64.Build.0 = Debug|x64
+		{493E23CB-182E-4933-AC06-536231623B89}.Debug|x86.ActiveCfg = Debug|Win32
+		{493E23CB-182E-4933-AC06-536231623B89}.Debug|x86.Build.0 = Debug|Win32
+		{493E23CB-182E-4933-AC06-536231623B89}.Release|x64.ActiveCfg = Release|x64
+		{493E23CB-182E-4933-AC06-536231623B89}.Release|x64.Build.0 = Release|x64
+		{493E23CB-182E-4933-AC06-536231623B89}.Release|x86.ActiveCfg = Release|Win32
+		{493E23CB-182E-4933-AC06-536231623B89}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
