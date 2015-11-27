@@ -1,6 +1,7 @@
 #ifndef UNITTREE_H
 #define UNITTREE_H
 #include "gentree.h"
+#include <iostream>
 
 class UnitTreeNode : public TreeNode
 {
@@ -29,5 +30,6 @@ public:
 
 UnitTreeNode* MakeCurrentUnitTree();
 int RunUnitTests(unsigned long id);
+int RunUnitTests(unsigned long id, std::ostream& str);
 
 #endif

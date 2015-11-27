@@ -107,7 +107,12 @@ void Canvas::StorePoint(wxMouseEvent & ev)
 
 void Canvas::RunUnitTests(wxCommandEvent&)
 {
-	::RunUnitTests(testId);
+	wxDialog* dlg = new wxDialog(0, -1, "output", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+	wxTextCtrl* txt = new wxTextCtrl(dlg, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+	dlg->Show();
+	std::ostream str(txt);
+	::RunUnitTests(testId, str);
+	std::getchar();
 }
 
 void Canvas::OnPaint(wxPaintEvent&)

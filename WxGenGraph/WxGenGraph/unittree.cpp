@@ -79,6 +79,11 @@ bool dummyAlt() {
 	return true;
 }
 
+int RunUnitTests(unsigned long id, std::ostream& str)
+{
+	boost::unit_test::unit_test_log.set_stream(str);
+	return RunUnitTests(id);
+}
 int RunUnitTests(unsigned long id)
 {
 	char* name = "qq";
