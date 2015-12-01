@@ -18,3 +18,25 @@ THe solutions for VC++ Express 2015 are provided.
 They expect WxWidgets to be extracted to drive w: and libraries built in W:\lib\vc_lib.
 Boost is supposed to be extracted to u: and libraries built in U:\stage\lib.
 
+A bit more detail on getting this to work:
+- wxWidgets:
+Downloaded WxWidgets 3.0.2 from https://www.wxwidgets.org/downloads/ (Windows Installer (47 MB))
+To build it, had to change 1 line in src\tiff\libtiff\tif_config.h:
+#define snprintf _snprintf -> #define wx_snprintf _snprintf
+After that, loading build\msw\wx.dsw (with migration) and building all configurations worked
+Did subst w: C:\wxWidgets-3.0.2
+- boost test:
+Downloaded boost_1_59_0.zip from http://sourceforge.net/projects/boost/?source=typ_redirect
+Did subst u: C:\boost_1_59_0
+in cmd, went to u:\, then
+bootstrap.bat
+b2 address-model=32 architecture=x86 --with-test link=static
+b2 address-model=32 architecture=x86 --with-test link=shared
+Added U:\stage\lib to path
+- built BoostTest and WxGenGraph without issues
+Run WxGenGraph, and in its menu do 
+Init Client (browse to the dll built for BoostTest), then 
+Select Test (double-click to select), then 
+Run Test(s)
+
+
