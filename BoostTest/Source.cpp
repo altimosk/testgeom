@@ -1,9 +1,10 @@
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
+#include <iostream>
 
-#include "gengraph.h"
-static GenericGraphics* GG = 0;
+#include "..\gengraph.h"
+GenericGraphics* GG = 0;
 extern "C"
 __declspec(dllexport) void SetGenericGraphics(GenericGraphics *gg) {
 	GG = gg;
@@ -27,6 +28,7 @@ BOOST_AUTO_TEST_SUITE(Drawing)
 BOOST_AUTO_TEST_CASE(DrawAll)
 /* Compare with void free_test_function() */
 {
+	std::cout << "here comes DrawAll" << std::endl;
 	if (!GG)
 		return;
 
@@ -49,11 +51,13 @@ BOOST_AUTO_TEST_SUITE(test_suite1)
 
 BOOST_AUTO_TEST_CASE(test_case1)
 {
+	std::cout << "here comes test_case1" << std::endl;
 	BOOST_TEST_WARN(sizeof(int) < 4U);
 }
 
 BOOST_AUTO_TEST_CASE(test_case2)
 {
+	std::cout << "here comes test_case2" << std::endl;
 	BOOST_TEST_REQUIRE(1 == 2);
 	BOOST_FAIL("Should never reach this line");
 }
@@ -69,6 +73,57 @@ BOOST_AUTO_TEST_CASE(test_case3)
 BOOST_AUTO_TEST_CASE(test_case4)
 {
 	BOOST_TEST(false);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+extern class TriGraph* CreateTriGraph(int nx, int ny);
+void DrawTriGraph(TriGraph* t);
+extern void TriGraphMaxFlowEdmondsKarp(TriGraph* t, int sx, int sy, int tx, int ty, int w);
+extern void TriGraphMaxFlowPushRelabel(TriGraph* t, int sx, int sy, int tx, int ty, int w);
+extern void TriGraphMaxFlowBoykovKolmogorov(TriGraph* t, int sx, int sy, int tx, int ty, int w);
+extern void TriGraphMinCostMaxFlow(TriGraph* t, int sx, int sy, int tx, int ty, int w);
+extern void ReleaseTriGraph(TriGraph* t);
+extern int dimacs();
+
+BOOST_AUTO_TEST_SUITE(Graph)
+BOOST_AUTO_TEST_CASE(CreateDraw)
+{
+	TriGraph* g = ::CreateTriGraph(20, 20);
+	::DrawTriGraph(g);
+	::ReleaseTriGraph(g);
+}
+
+BOOST_AUTO_TEST_CASE(EdmondsKarp)
+{
+	TriGraph* g = ::CreateTriGraph(200, 200);
+	::TriGraphMaxFlowEdmondsKarp(g, 14, 15, 183, 186, 8);
+	::ReleaseTriGraph(g);
+}
+
+BOOST_AUTO_TEST_CASE(PushRelabel)
+{
+	TriGraph* g = ::CreateTriGraph(200, 200);
+	::TriGraphMaxFlowPushRelabel(g, 14, 15, 183, 186, 8);
+	::ReleaseTriGraph(g);
+}
+
+BOOST_AUTO_TEST_CASE(BoykovKolmogorov)
+{
+	TriGraph* g = ::CreateTriGraph(200, 200);
+	::TriGraphMaxFlowBoykovKolmogorov(g, 14, 15, 183, 186, 8);
+	::ReleaseTriGraph(g);
+}
+
+BOOST_AUTO_TEST_CASE(MinCostMaxFlow)
+{
+	TriGraph* g = ::CreateTriGraph(200, 200);
+	::TriGraphMinCostMaxFlow(g, 14, 15, 183, 186, 8);
+	::ReleaseTriGraph(g);
+}
+BOOST_AUTO_TEST_CASE(Dimacs)
+{
+	dimacs();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

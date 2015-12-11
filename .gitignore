@@ -15,3 +15,5 @@
 *.suo
 *.tlog
 *.user
+BoostTest/Release/BoostTest.log
+BoostTest/Debug/BoostTest.log
