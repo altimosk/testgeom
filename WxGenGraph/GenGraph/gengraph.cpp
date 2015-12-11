@@ -128,6 +128,9 @@ public:
 		if (dc && k != 1)
 		{
 			wxAffineMatrix2D m = dc->GetTransformMatrix();
+			dc->ResetTransformMatrix();
+			wxSize sz = dc->GetSize();
+			dc->StretchBlit(wxPoint(scrx*(1 - k), scry*(1 - k)), k*sz, dc, wxPoint(0, 0), sz );
 			wxAffineMatrix2D t1; t1.Translate(-scrx, -scry);
 			t1.Concat(m);
 			wxAffineMatrix2D s; s.Scale(k, k);
@@ -146,7 +149,7 @@ public:
 			wxAffineMatrix2D m = dc->GetTransformMatrix();
 			dc->ResetTransformMatrix();
 			wxSize sz = dc->GetSize();
-			dc->Blit(scrx, scry, sz.GetWidth(), sz.GetHeight(), dc, 0, 0);
+			dc->Blit(wxPoint(scrx, scry), sz, dc, wxPoint(0, 0));
 			wxAffineMatrix2D t;
 			t.Translate(scrx, scry);
 			t.Concat(m);

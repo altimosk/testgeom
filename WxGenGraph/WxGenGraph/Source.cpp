@@ -233,7 +233,7 @@ void Canvas::ProcessMouseWheel(wxMouseEvent &ev, int& oldX, int& oldY)
 	oldX = ev.GetX();
 	oldY = ev.GetY();
 	gg->Zoom(oldX, oldY, k);
-	gg->Redraw();
+//	gg->Redraw();
 }
 
 
