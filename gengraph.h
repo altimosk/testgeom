@@ -78,8 +78,13 @@ public:
     void FlushToScreen()
     {}
 
-	// scale all saved and future drawings. x,y retains its position on screen
-	virtual void Zoom(int x, int y, double koff) 
+	// scale all saved and future drawings. 
+	// scrx,scry (Screen coord!) retains its position on screen
+	virtual void Zoom(int scrx, int scry, double koff)
+	{}
+
+	// shift all saved and future drawings by scrx, scry (Screen coord!)
+	virtual void Pan(int scrx, int scry)
 	{}
 
 	// make x,y appear in the center of the screen; scaling unchanged

@@ -1,5 +1,5 @@
 #include <wx/wx.h>
-#include "gengraph.h"
+#include "..\gengraph.h"
 #include "cliwrap.h"
 #include "treedlg.h"
 #include "unittree.h"
@@ -17,7 +17,13 @@ public:
 private:
 	void DrawPoint(wxMouseEvent &);
 	void StorePoint(wxMouseEvent &);
+	void PanZoom(wxMouseEvent &);
+	void OnMouseMove(wxMouseEvent &);
 	void OnPaint(wxPaintEvent&);
+
+	void ProcessMiddleDrag(wxMouseEvent &, int& oldX, int& oldY);
+	void ProcessMouseWheel(wxMouseEvent &, int& oldX, int& oldY);
+
 	void InitClient(wxCommandEvent&);
 	void RunUnitTests(wxCommandEvent&);
 	void DeInitClient();
@@ -27,12 +33,26 @@ private:
 	wxClientDC* dc;
 	ClientWrap cw;
 	unsigned long testId;
+
+	// a window to redirect std::cout to
+	wxDialog coutDlg;
+	wxTextCtrl coutTxt;
+	wxStreamToTextRedirector redirect;
+
 };
 
-Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(280, 180)), gg(0), dc(0), testId(0xffffffff)
+Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(280, 180)), gg(0), dc(0), testId(0xffffffff),
+coutDlg(0, -1, "Output", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
+coutTxt(&coutDlg, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), redirect(&coutTxt)
 {
+	coutDlg.Show();
+
 	Connect(wxEVT_LEFT_UP, wxMouseEventHandler(Canvas::DrawPoint));
 	Connect(wxEVT_RIGHT_UP, wxMouseEventHandler(Canvas::StorePoint));
+	Connect(wxEVT_MOUSEWHEEL, wxMouseEventHandler(Canvas::PanZoom));
+	Connect(wxEVT_MIDDLE_DOWN, wxMouseEventHandler(Canvas::PanZoom));
+	Connect(wxEVT_MIDDLE_UP, wxMouseEventHandler(Canvas::PanZoom));
+	Connect(wxEVT_MOTION, wxMouseEventHandler(Canvas::OnMouseMove));
 	Connect(wxEVT_PAINT, wxPaintEventHandler(Canvas::OnPaint));
 
 	wxMenuBar* menubar = new wxMenuBar;
@@ -49,6 +69,7 @@ Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefault
 
 	CreateStatusBar();
 }
+
 Canvas::~Canvas()
 {
 	DeInitClient();
@@ -105,12 +126,120 @@ void Canvas::StorePoint(wxMouseEvent & ev)
 	gg->DrawCircle(p.m_x, p.m_y, 1, kRed, true, false);
 }
 
+static char const *EventType(wxMouseEvent &ev)
+{
+	if( ev.GetEventType() == wxEVT_LEFT_DOWN ) return "EVT_LEFT_DOWN";
+	if( ev.GetEventType() == wxEVT_LEFT_UP ) return "EVT_LEFT_UP";
+	if( ev.GetEventType() == wxEVT_MIDDLE_DOWN ) return "EVT_MIDDLE_DOWN";
+	if( ev.GetEventType() == wxEVT_MIDDLE_UP ) return "EVT_MIDDLE_UP";
+	if( ev.GetEventType() == wxEVT_RIGHT_DOWN ) return "EVT_RIGHT_DOWN";
+	if( ev.GetEventType() == wxEVT_RIGHT_UP ) return "EVT_RIGHT_UP";
+	if( ev.GetEventType() == wxEVT_MOTION ) return "EVT_MOTION";
+	if( ev.GetEventType() == wxEVT_ENTER_WINDOW ) return "EVT_ENTER_WINDOW";
+	if( ev.GetEventType() == wxEVT_LEAVE_WINDOW ) return "EVT_LEAVE_WINDOW";
+	if( ev.GetEventType() == wxEVT_LEFT_DCLICK ) return "EVT_LEFT_DCLICK";
+	if( ev.GetEventType() == wxEVT_MIDDLE_DCLICK ) return "EVT_MIDDLE_DCLICK";
+	if( ev.GetEventType() == wxEVT_RIGHT_DCLICK ) return "EVT_RIGHT_DCLICK";
+	if( ev.GetEventType() == wxEVT_SET_FOCUS ) return "EVT_SET_FOCUS";
+	if( ev.GetEventType() == wxEVT_KILL_FOCUS ) return "EVT_KILL_FOCUS";
+	if( ev.GetEventType() == wxEVT_CHILD_FOCUS ) return "EVT_CHILD_FOCUS";
+	if( ev.GetEventType() == wxEVT_MOUSEWHEEL ) return "EVT_MOUSEWHEEL";
+	if( ev.GetEventType() == wxEVT_AUX1_DOWN ) return "EVT_AUX1_DOWN";
+	if( ev.GetEventType() == wxEVT_AUX1_UP ) return "EVT_AUX1_UP";
+	if( ev.GetEventType() == wxEVT_AUX1_DCLICK ) return "EVT_AUX1_DCLICK";
+	if( ev.GetEventType() == wxEVT_AUX2_DOWN ) return "EVT_AUX2_DOWN";
+	if( ev.GetEventType() == wxEVT_AUX2_UP ) return "EVT_AUX2_UP";
+	if( ev.GetEventType() == wxEVT_AUX2_DCLICK ) return "EVT_AUX2_DCLICK";
+
+	return 0;
+}
+
+static char const *MouseState(wxMouseEvent &ev)
+{
+	static char buf[8];
+	buf[0] = ev.m_leftDown ? 'L' : 'l';
+	buf[1] = ev.m_middleDown ? 'M' : 'm';
+	buf[2] = ev.m_rightDown ? 'R' : 'r';
+	buf[3] = ev.m_aux1Down ? 'A' : 'a';
+	buf[4] = ev.m_aux2Down ? 'A' : 'a';
+	buf[5] = 0;
+	return buf;
+}
+
+void TrackMouse(wxMouseEvent &ev)
+{
+	std::cout << "Type: " << EventType(ev) << " State: " << MouseState(ev) << "  " << ev.m_x << ", " << ev.m_y << std::endl;
+	std::cout << "Mouse Event: " << 
+		" clicks: " << ev.m_clickCount <<
+		" axis: " << ev.m_wheelAxis <<
+		" rotation: " << ev.m_wheelRotation <<
+		" delta: " << ev.m_wheelDelta <<
+		" lines: " << ev.m_linesPerAction <<
+		" culumns: " << ev.m_columnsPerAction << std::endl;
+}
+
+void Canvas::OnMouseMove(wxMouseEvent &ev)
+{
+	if (ev.ButtonIsDown(wxMOUSE_BTN_MIDDLE))
+		PanZoom(ev);
+}
+
+void Canvas::PanZoom(wxMouseEvent &ev)
+{
+//	TrackMouse(ev);
+
+	if (!gg)
+		return;
+
+	static int oldX, oldY;
+	if (ev.GetEventType() == wxEVT_MIDDLE_DOWN)
+	{
+		oldX = ev.GetX();
+		oldY = ev.GetY();
+		return;
+	}
+	if (ev.GetEventType() == wxEVT_MIDDLE_UP)
+	{
+		gg->Redraw();
+		return;
+	}
+	if (ev.GetEventType() == wxEVT_MOTION)
+	{
+		ProcessMiddleDrag(ev, oldX, oldY);
+		return;
+	}
+	if (ev.GetEventType() == wxEVT_MOUSEWHEEL )
+	{
+		ProcessMouseWheel(ev, oldX, oldY);
+		return;
+	}
+	
+}
+
+void Canvas::ProcessMiddleDrag(wxMouseEvent &ev, int& oldX, int& oldY)
+{
+	int newX = ev.GetX();
+	int newY = ev.GetY();
+	oldX -= newX;
+	oldY -= newY;
+	gg->Pan(-oldX, -oldY);
+	oldX = newX;
+	oldY = newY;
+}
+
+void Canvas::ProcessMouseWheel(wxMouseEvent &ev, int& oldX, int& oldY)
+{
+	double k = pow(1.5, ev.m_wheelRotation /120.);
+	oldX = ev.GetX();
+	oldY = ev.GetY();
+	gg->Zoom(oldX, oldY, k);
+	gg->Redraw();
+}
+
+
 void Canvas::RunUnitTests(wxCommandEvent&)
 {
-	wxDialog* dlg = new wxDialog(0, -1, "output", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	wxTextCtrl* txt = new wxTextCtrl(dlg, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-	dlg->Show();
-	std::ostream str(txt);
+	std::ostream str(&coutTxt);
 	::RunUnitTests(testId, str);
 	std::getchar();
 }

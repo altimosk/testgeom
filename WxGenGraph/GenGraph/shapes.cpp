@@ -1,5 +1,5 @@
 #include <wx/wx.h>
-#include "gengraph.h"
+#include "..\gengraph.h"
 #include "shapes.h"
 
 wxColor MakeColor(int color)

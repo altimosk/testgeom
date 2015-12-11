@@ -1,5 +1,5 @@
 #include <wx/wx.h>
-#include "gengraph.h"
+#include "..\gengraph.h"
 #include "shapes.h"
 #include <vector>
 #include <algorithm>
@@ -121,17 +121,36 @@ public:
 		}
 	}
 
-	// scale all saved and future drawings. x,y retains its position on screen
-	virtual void Zoom(int x, int y, double k)
+	// scale all saved and future drawings. 
+	// scrx,scry (Screen coord!) retains its position on screen
+	virtual void Zoom(int scrx, int scry, double k)
 	{
 		if (dc && k != 1)
 		{
 			wxAffineMatrix2D m = dc->GetTransformMatrix();
-			wxPoint2DDouble src(x, y);
-			wxPoint2DDouble dest = m.TransformPoint(src);
-			m.Scale(k, k);
-			AdjustTranslate(m, src, dest);
-			dc->SetTransformMatrix(m);
+			wxAffineMatrix2D t1; t1.Translate(-scrx, -scry);
+			t1.Concat(m);
+			wxAffineMatrix2D s; s.Scale(k, k);
+			s.Concat(t1);
+			wxAffineMatrix2D t2; t2.Translate(scrx, scry);
+			t2.Concat(s);
+			dc->SetTransformMatrix(t2);
+		}
+	}
+
+	// Screen coord!
+	virtual void Pan(int scrx, int scry)
+	{
+		if (dc)
+		{
+			wxAffineMatrix2D m = dc->GetTransformMatrix();
+			dc->ResetTransformMatrix();
+			wxSize sz = dc->GetSize();
+			dc->Blit(scrx, scry, sz.GetWidth(), sz.GetHeight(), dc, 0, 0);
+			wxAffineMatrix2D t;
+			t.Translate(scrx, scry);
+			t.Concat(m);
+			dc->SetTransformMatrix(t);
 		}
 	}
 
@@ -141,9 +160,10 @@ public:
 		if (dc)
 		{
 			wxAffineMatrix2D m = dc->GetTransformMatrix();
+			wxPoint2DDouble src(x, y); src = m.TransformPoint(src);
 			wxSize sz = dc->GetSize();
-			AdjustTranslate(m, wxPoint2DDouble(x, y), wxPoint2DDouble(sz.GetWidth()/2, sz.GetHeight()/2));
-			dc->SetTransformMatrix(m);
+			wxPoint2DDouble dest(sz.GetWidth() / 2, sz.GetHeight() / 2);
+			Pan((int)(dest.m_x - src.m_x), (int)(dest.m_y - src.m_y));
 		}
 	}
 

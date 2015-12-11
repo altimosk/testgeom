@@ -1,6 +1,6 @@
 #include <wx/wx.h>
 #include "cliwrap.h"
-#include "gengraph.h"
+#include "..\gengraph.h"
 
 void ClientWrap::Unwrap()
 {
