@@ -96,29 +96,29 @@ BOOST_AUTO_TEST_CASE(CreateDraw)
 
 BOOST_AUTO_TEST_CASE(EdmondsKarp)
 {
-	TriGraph* g = ::CreateTriGraph(200, 200);
-	::TriGraphMaxFlowEdmondsKarp(g, 14, 15, 183, 186, 8);
+	TriGraph* g = ::CreateTriGraph(240, 240);
+	::TriGraphMaxFlowEdmondsKarp(g, 34, 35, 203, 206, 8);
 	::ReleaseTriGraph(g);
 }
 
 BOOST_AUTO_TEST_CASE(PushRelabel)
 {
-	TriGraph* g = ::CreateTriGraph(200, 200);
-	::TriGraphMaxFlowPushRelabel(g, 14, 15, 183, 186, 8);
+	TriGraph* g = ::CreateTriGraph(240, 240);
+	::TriGraphMaxFlowPushRelabel(g, 34, 35, 203, 206, 8);
 	::ReleaseTriGraph(g);
 }
 
 BOOST_AUTO_TEST_CASE(BoykovKolmogorov)
 {
-	TriGraph* g = ::CreateTriGraph(200, 200);
-	::TriGraphMaxFlowBoykovKolmogorov(g, 14, 15, 183, 186, 8);
+	TriGraph* g = ::CreateTriGraph(240, 240);
+	::TriGraphMaxFlowBoykovKolmogorov(g, 34, 35, 203, 206, 8);
 	::ReleaseTriGraph(g);
 }
 
 BOOST_AUTO_TEST_CASE(MinCostMaxFlow)
 {
-	TriGraph* g = ::CreateTriGraph(200, 200);
-	::TriGraphMinCostMaxFlow(g, 14, 15, 183, 186, 8);
+	TriGraph* g = ::CreateTriGraph(240, 240);
+	::TriGraphMinCostMaxFlow(g, 34, 35, 203, 206, 8);
 	::ReleaseTriGraph(g);
 }
 BOOST_AUTO_TEST_CASE(Dimacs)

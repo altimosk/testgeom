@@ -128,10 +128,14 @@ public:
 	void Draw(bool keep = false)
 	{
 		extern GenericGraphics* GG;
-		GG->DeleteSavedGraphics();
-		Point c = Coord(Vert(NX / 2, NY / 2, true));
-		GG->Center(c.first, c.second);
-		GG->Redraw();
+		if (keep)
+		{
+			GG->DeleteSavedGraphics();
+			Point c = Coord(Vert(NX / 2, NY / 2, true));
+			GG->Center(c.first, c.second);
+			GG->Redraw();
+		}
+
 		int n = 0; 
 		for (int i = 0; i < 2; ++i)
 		{
@@ -139,8 +143,9 @@ public:
 			graph_traits<Graph>::edge_iterator ei, ei_end;
 			for (boost::tie(ei, ei_end) = edges(graph); ei != ei_end; ++ei)
 			{
-				if ( get(edge_capacity, graph)[*ei] <= 0)
+				if ( (i || !IsSpecial(*ei)) && get(edge_capacity, graph)[*ei] <= 0)
 					continue;
+
 				if ( i == 1 && Flow(*ei) <= 0)
 					continue;
 
@@ -192,37 +197,31 @@ private:
 
 		get(edge_reverse, graph)[e1] = e2;
 		get(edge_reverse, graph)[e2] = e1;
+		get(edge_capacity, graph)[e1] = 0;
+		get(edge_capacity, graph)[e2] = 0;
+		get(edge_weight, graph)[e1] = 0;
+		get(edge_weight, graph)[e2] = 0;
 
 		if (IsBlocked(v1) || IsBlocked(v2))
-		{
-			get(edge_capacity, graph)[e1] = 0;
-			get(edge_capacity, graph)[e2] = 0;
-		}
-		else
-		{
-			bool revert = (v1 % NXY == v2 % NXY);
-			get(edge_capacity, graph)[e1] = (!IsIn(v1) && IsIn(v2)) != revert;
-			get(edge_capacity, graph)[e2] = (IsIn(v1) && !IsIn(v2)) != revert;
-			if (get(edge_capacity, graph)[e1] > 0)
-			{
-				Point p = LogCoord(v1);
-				int w = (p.first - NX / 2)*(p.first - NX / 2);
-				get(edge_weight, graph)[e1] = w;
-				get(edge_weight, graph)[e2] = -w;
-			}
-			else if (get(edge_capacity, graph)[e2] > 0)
-			{
-				Point p = LogCoord(v2);
-				int w = (p.first - NX / 2)*(p.first - NX / 2);
-				get(edge_weight, graph)[e2] = w;
-				get(edge_weight, graph)[e1] = -w;
-			}
-			else 
-			{
-				get(edge_weight, graph)[e1] = 0;
-				get(edge_weight, graph)[e2] = 0;
-			}
-		}
+			return;
+
+		bool zeroLen = (v1 % NXY == v2 % NXY); // if 0 length, flow gos from in to out, and weight is 0
+
+		get(edge_capacity, graph)[e1] = (!IsIn(v1) && IsIn(v2)) != zeroLen;
+		get(edge_capacity, graph)[e2] = (IsIn(v1) && !IsIn(v2)) != zeroLen;
+		
+		if (zeroLen)
+			return;
+
+		int w = 0;
+
+		if (get(edge_capacity, graph)[e1] > 0)
+			w = Weight(v1);
+		else if (get(edge_capacity, graph)[e2] > 0)
+			w = -Weight(v2);
+
+		get(edge_weight, graph)[e1] = w;
+		get(edge_weight, graph)[e2] = -w;
 	}
 
 	Vertex Vert(int i, int j, bool in) {
@@ -238,45 +237,60 @@ private:
 		return std::make_pair((int)(v % NX), (int)(v / NX));
 	}
 
-	Point Coord(Vertex v)
-	{
-		if (v == src || v == tgt )
-		{
-			Point p1 = Coord(Vert(0, 0, false));
-			Point p2 = Coord(Vert(NX-1, NY-1, false));
-			return (v == src) ? std::make_pair(p1.first, p2.second) : std::make_pair(p2.first, p1.second);
-		}
-		static const double H = sqrt(3) / 2;
-		static const double Z = 8;
-		Point p = LogCoord(v);
-		p.first = (int)(Z*(p.first + .5*p.second));
-		p.second = (int)(Z*H*p.second);
-		return p;
-	}
-
 	bool IsIn(Vertex v) {
 		return v < (size_t)NXY || v == tgt;
 	}
 
+	bool IsSpecial(Vertex v) {
+		return v >= 2 * (size_t)NXY;
+	}
 	bool IsSpecial(Edge e) {
-		return (source(e, graph) >= 2 * (size_t)NXY || target(e, graph) >= 2 * (size_t)NXY);
+		return IsSpecial(source(e, graph)) || IsSpecial(target(e, graph));
+	}
+
+	int Flow(Edge e) {
+		return get(edge_capacity, graph)[e] - get(edge_residual_capacity, graph)[e];
+	}
+
+	// geometry
+	Point Coord(Vertex v)
+	{
+		if (v == src || v == tgt)
+		{
+			Point p1 = Coord(Vert(0, 0, false));
+			Point p2 = Coord(Vert(NX - 1, NY - 1, false));
+			return (v == src) ? std::make_pair(p1.first, p2.second) : std::make_pair(p2.first, p1.second);
+		}
+		Point p = LogCoord(v);
+		p.first = W*p.first + W / 2 * p.second;
+		p.second = H*p.second;
+		return p;
 	}
 
 	bool IsBlocked(Vertex v)
 	{
-		Point l = LogCoord(v);
-		if (l.first > NX / 3 && l.first < 2*NX / 3 &&
-			l.second > 10 && l.second < NY / 2+10 )
-			return true;
-		if( l.first > NX / 2 - 10 && l.first < NX - 40 && 
-			l.second > NY / 2 + 25 && l.second < NY - 15 )
-			return true;
+		if (IsSpecial(v))
+			return false;
 
-		return false;
+		// block all points in radius of R around all points in GxG square grid
+		const double R = 3*W;
+		const double G = 10*W;
+		Point p = Coord(v);
+		Point c((int)(round(p.first / G) * G), (int)(round(p.second / G) * G));
+		
+		return hypot(p.first - c.first, p.second - c.second) <= R;
 	}
-	int Flow(Edge e) {
-		return get(edge_capacity, graph)[e] - get(edge_residual_capacity, graph)[e];
+
+	int Weight(Vertex v) {
+		Point c = Coord(Vert(NX / 2, NY / 2, true));
+		Point p = Coord(v);
+		return (p.first - c.first)*(p.first - c.first);
 	}
+
+	// points 0,0 - 8,0 - 4,7 make a roughly equilateral triangle
+	static const int H = 7;
+	static const int W = 8;
+
 };
 
 TriGraph* CreateTriGraph(int nx, int ny) {
