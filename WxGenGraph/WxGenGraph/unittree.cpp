@@ -13,6 +13,26 @@
 #include <boost/test/unit_test_parameters.hpp>
 #include <boost/cstdlib.hpp>            // for exit codes
 
+#ifndef BOOST_TEST_IMPL_TRY
+#define BOOST_TEST_IMPL_TRY BOOST_TEST_I_TRY
+#endif
+
+#ifndef BOOST_TEST_IMPL_CATCH
+#define BOOST_TEST_IMPL_CATCH BOOST_TEST_I_CATCH
+#endif
+
+#ifndef BOOST_TEST_IMPL_CATCH0
+#define BOOST_TEST_IMPL_CATCH0 BOOST_TEST_I_CATCH0
+#endif
+
+#ifndef BOOST_TEST_IMPL_CATCHALL
+#define BOOST_TEST_IMPL_CATCHALL BOOST_TEST_I_CATCHALL
+#endif
+
+#ifndef BOOST_TEST_IMPL_RETHROW
+#define BOOST_TEST_IMPL_RETHROW BOOST_TEST_I_RETHROW
+#endif
+
 UnitTreeNode* MakeUnitTreeNode(boost::unit_test::test_unit const& u)
 {
 	UnitTreeNode* n = new UnitTreeNode(TreeNode::strdup(u.full_name()));
@@ -100,9 +120,9 @@ int RunUnitTests(unsigned long id)
 
 	results_reporter::make_report();
 
-	result_code = runtime_config::no_result_code()
-	? boost::exit_success
-		: results_collector.results(framework::master_test_suite().p_id).result_code();
+	result_code = 
+        //runtime_config::no_result_code()	? boost::exit_success.		: 
+        results_collector.results(framework::master_test_suite().p_id).result_code();
 	}
 		BOOST_TEST_IMPL_CATCH0(framework::nothing_to_test) {
 		result_code = boost::exit_success;
