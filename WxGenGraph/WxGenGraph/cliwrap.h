@@ -9,7 +9,7 @@ class ClientWrap
 public:
 	ClientWrap() : dll(0), ggf(0) {
 		}
-	bool ReInit(GenericGraphics*);
+    bool ReInit(GenericGraphics*, const wxString&);
 	void Unwrap();
 	~ClientWrap() {
 	void Unwrap(); }

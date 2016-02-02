@@ -15,10 +15,15 @@ if (dll)
 	}
 }
 
-bool ClientWrap::ReInit(GenericGraphics* gg)
+bool ClientWrap::ReInit(GenericGraphics* gg, const wxString& argv)
 {
 	Unwrap();
-	wxString filename = wxFileSelector(wxT("Select a DLL"), wxEmptyString, wxEmptyString, wxEmptyString, wxT("*.dll"));
+    wxString filename;
+    if (argv.empty())
+        filename = wxFileSelector(wxT("Select a DLL"), wxEmptyString, wxEmptyString, wxEmptyString, wxT("*.dll"));
+    else
+        filename = argv;
+
 	if (filename.empty())
 		return false;
 

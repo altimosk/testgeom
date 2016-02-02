@@ -12,7 +12,7 @@ extern wxDC* ReplaceDC(GenericGraphics* gg, wxDC *dc);
 class Canvas : public wxFrame
 {
 public:
-	Canvas(const wxString& title);
+	Canvas(const wxString& title, const wxString& argv);
 	~Canvas();
 private:
 	void DrawPoint(wxMouseEvent &);
@@ -24,7 +24,9 @@ private:
 	void ProcessMiddleDrag(wxMouseEvent &, int& oldX, int& oldY);
 	void ProcessMouseWheel(wxMouseEvent &, int& oldX, int& oldY);
 
-	void InitClient(wxCommandEvent&);
+    void InitClient(const wxString& argv);
+    void InitClient(wxCommandEvent&) { InitClient(wxString()); }
+
 	void RunUnitTests(wxCommandEvent&);
 	void DeInitClient();
 	void SelectTest(wxCommandEvent&);
@@ -41,7 +43,8 @@ private:
 
 };
 
-Canvas::Canvas(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(280, 180)), gg(0), dc(0), testId(0xffffffff),
+Canvas::Canvas(const wxString& title, const wxString& argv) : 
+wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(280, 180)), gg(0), dc(0), testId(0xffffffff),
 coutDlg(0, -1, "Output", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
 coutTxt(&coutDlg, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), redirect(&coutTxt)
 {
@@ -68,6 +71,8 @@ coutTxt(&coutDlg, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULT
 	Connect(3, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Canvas::RunUnitTests));
 
 	CreateStatusBar();
+    if (!argv.empty())
+        InitClient(argv);
 }
 
 Canvas::~Canvas()
@@ -75,7 +80,8 @@ Canvas::~Canvas()
 	DeInitClient();
 }
 
-void Canvas::InitClient(wxCommandEvent&)
+
+void Canvas::InitClient(const wxString& argv)
 {
 	DeInitClient();
 	dc = new wxClientDC(this);
@@ -91,7 +97,7 @@ void Canvas::InitClient(wxCommandEvent&)
 	}
 	else
 	{
-		cw.ReInit(gg);
+		cw.ReInit(gg, argv);
 	}
 
 	Refresh();
@@ -283,7 +289,11 @@ IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
 {
-	(new Canvas(wxT("Canvas")))->Show(true);
+    wxString arg;
+    if (argc > 1)
+        arg = argv[1];
+
+	(new Canvas(wxT("Canvas"), arg))->Show(true);
 	return true;
 }
 
