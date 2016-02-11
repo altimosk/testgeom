@@ -39,14 +39,15 @@ private:
 	// a window to redirect std::cout to
 	wxDialog coutDlg;
 	wxTextCtrl coutTxt;
-	wxStreamToTextRedirector redirect;
+    wxStreamToTextRedirector redirect;
+    wxStreamToTextRedirector redirectErr;
 
 };
 
 Canvas::Canvas(const wxString& title, const wxString& argv) : 
 wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(280, 180)), gg(0), dc(0), testId(0xffffffff),
 coutDlg(0, -1, "Output", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
-coutTxt(&coutDlg, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), redirect(&coutTxt)
+coutTxt(&coutDlg, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), redirect(&coutTxt), redirectErr(&coutTxt, &std::cerr)
 {
 	coutDlg.Show();
 
@@ -245,9 +246,7 @@ void Canvas::ProcessMouseWheel(wxMouseEvent &ev, int& oldX, int& oldY)
 
 void Canvas::RunUnitTests(wxCommandEvent&)
 {
-	std::ostream str(&coutTxt);
-	::RunUnitTests(testId, str);
-	std::getchar();
+	::RunUnitTests(testId);
 }
 
 void Canvas::OnPaint(wxPaintEvent&)
